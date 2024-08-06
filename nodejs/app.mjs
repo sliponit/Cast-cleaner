@@ -10,8 +10,10 @@ client.$.waitForReady(Date.now() + 5000, (e) => {
   } else {
     console.log(`Connected to ${hubRpcEndpoint}`);
 
-    client.getCastsByFid({ fid: 6023 }).then((castsResult) => {
-      castsResult.map((casts) => console.log(casts.messages));
+    client.getCastsByFid({ fid: 20221 }).then((castsResult) => {
+      castsResult.map((cast) => cast.messages.map((message) => {
+        console.log(message); // .data?.castAddBody?.text);
+      }));
       client.close();
     });
   }
