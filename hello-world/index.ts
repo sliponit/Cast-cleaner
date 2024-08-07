@@ -130,7 +130,7 @@ const getOrRegisterFid = async (): Promise<number> => {
 
 const getOrRegisterSigner = async (fid: number) => {
   if (SIGNER_PRIVATE_KEY !== zeroAddress) {
-    console.log('TODO??', {SIGNER_PRIVATE_KEY})
+    console.log('TODO??', { SIGNER_PRIVATE_KEY });
     // If a private key is provided, we assume the signer is already in the key registry
     const privateKeyBytes = fromHex(SIGNER_PRIVATE_KEY, "bytes");
     const publicKeyBytes = ed25519.getPublicKey(privateKeyBytes);
@@ -229,20 +229,28 @@ const submitMessage = async (resultPromise: HubAsyncResult<Message>) => {
 
   const fid = await getOrRegisterFid();
   const signerPrivateKey = await getOrRegisterSigner(fid);
-  console.log('TODO??', signerPrivateKey);
   const fname = await registerFname(fid);
-
-  // Now set the fname by constructing the appropriate userDataAdd message and signing it
   const signer = new NobleEd25519Signer(signerPrivateKey);
   const dataOptions = {
     fid: fid,
     network: FC_NETWORK,
   };
-  const userDataPfpBody = {
-    type: UserDataType.USERNAME,
-    value: fname,
-  };
-  // await submitMessage(makeUserDataAdd(userDataPfpBody, dataOptions, signer));
+
+  const { messages, nextPageToken } = await hubClient.getCastsByFid({
+    fid,
+    pageSize: 1,
+    reverse: true
+  }).then(async (castsResult) => {
+    const nextPageToken = castsResult.map(cast => cast.nextPageToken);
+    const messages = await castsResult.map((cast) => cast.messages.map((message) => {
+      const castRemoveBody = { targetHash: message.hash };
+      return submitMessage(makeCastRemove(castRemoveBody, dataOptions, signer));
+      // return message.hash; // .data?.castAddBody?.text);
+    }));
+  
+    return { nextPageToken, messages };
+  });
+  console.log({ nextPageToken }, messages);
 
   // // Now set the PFP and display name as well
   // await submitMessage(makeUserDataAdd({ type: UserDataType.DISPLAY, value: fname }, dataOptions, signer));
