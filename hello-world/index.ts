@@ -41,14 +41,15 @@ import {
   waitForTransactionReceipt,
   getChainId,
 } from "viem/actions";
+import 'dotenv/config'
 
 /**
  * Populate the following constants with your own values
  */
-const MNEMONIC = "<REQUIRED>";
-const OP_PROVIDER_URL = "<REQUIRED>"; // Alchemy or Infura url
+const MNEMONIC = process.env.MNEMONIC as string;
+const OP_PROVIDER_URL = process.env.OP_PROVIDER_URL;
 const RECOVERY_ADDRESS = zeroAddress; // Optional, using the default value means the account will not be recoverable later if the mnemonic is lost
-const SIGNER_PRIVATE_KEY: Hex = zeroAddress; // Optional, using the default means a new signer will be created each time
+const SIGNER_PRIVATE_KEY: Hex = process.env.SIGNER_PRIVATE_KEY as Hex; // Optional, using the default means a new signer will be created each time
 
 // Note: nemes is the Farcaster team's mainnet hub, which is password protected to prevent abuse. Use a 3rd party hub
 // provider like https://neynar.com/ Or, run your own mainnet hub and broadcast to it permissionlessly.
