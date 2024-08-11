@@ -1,15 +1,22 @@
 {
-  "name": "cast-cleaner-nodejs",
-  "version": "1.0.0",
-  "main": "app.mjs",
-  "scripts": {
-    "start": "node app.mjs",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "sliponit",
-  "license": "MIT",
+  "name": "example-hello-world",
+  "private": true,
   "type": "module",
+  "version": "0.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "tsx index.ts",
+    "typecheck": "yarn tsc --noEmit"
+  },
   "dependencies": {
-    "@farcaster/hub-nodejs": "^0.11.23"
+    "@farcaster/hub-nodejs": "^0.11.23",
+    "axios": "^1.7.3",
+    "dotenv": "^16.4.5",
+    "viem": "^2.18.8",
+    "wagmi": "^2.12.2"
+  },
+  "devDependencies": {
+    "tsx": "^3.12.5",
+    "typescript": "^5.0.0"
   }
 }
