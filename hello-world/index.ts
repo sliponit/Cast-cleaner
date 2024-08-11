@@ -43,6 +43,8 @@ import {
 } from "viem/actions";
 import 'dotenv/config'
 
+const MAX_DIFF_IN_DAYS = 7;
+
 /**
  * Populate the following constants with your own values
  */
@@ -84,7 +86,6 @@ const getOrRegisterFid = async (): Promise<number> => {
   })) as bigint;
 
   console.log(`Using address: ${account.address} with balance: ${balance}`);
-  console.log('TODO??', { existingFid });
 
   if (balance === 0n && existingFid === 0n) {
     throw new Error("No existing Fid and no funds to register an fid");
@@ -130,7 +131,6 @@ const getOrRegisterFid = async (): Promise<number> => {
 
 const getOrRegisterSigner = async (fid: number) => {
   if (SIGNER_PRIVATE_KEY !== zeroAddress) {
-    console.log('TODO??', { SIGNER_PRIVATE_KEY });
     // If a private key is provided, we assume the signer is already in the key registry
     const privateKeyBytes = fromHex(SIGNER_PRIVATE_KEY, "bytes");
     const publicKeyBytes = ed25519.getPublicKey(privateKeyBytes);
@@ -236,27 +236,19 @@ const submitMessage = async (resultPromise: HubAsyncResult<Message>) => {
     network: FC_NETWORK,
   };
 
-  const { messages, nextPageToken } = await hubClient.getCastsByFid({
+  await hubClient.getCastsByFid({
     fid,
-    pageSize: 1,
-    reverse: true
+    pageSize: 10,
   }).then(async (castsResult) => {
-    const nextPageToken = castsResult.map(cast => cast.nextPageToken);
-    const messages = await castsResult.map((cast) => cast.messages.map((message) => {
-      const castRemoveBody = { targetHash: message.hash };
-      return submitMessage(makeCastRemove(castRemoveBody, dataOptions, signer));
-      // return message.hash; // .data?.castAddBody?.text);
+    await castsResult.map((cast) => cast.messages.map((message) => {
+      const timeDiff = (Date.now() / 1000 - 1609459200 - message.data.timestamp) / 3600 / 24; // fc timestamps start at 1609459200
+      if (timeDiff > MAX_DIFF_IN_DAYS) {
+        console.log('deleting', message);
+        const castRemoveBody = { targetHash: message.hash };
+        return submitMessage(makeCastRemove(castRemoveBody, dataOptions, signer));
+      }
     }));
-  
-    return { nextPageToken, messages };
   });
-  console.log({ nextPageToken }, messages);
-
-  // // Now set the PFP and display name as well
-  // await submitMessage(makeUserDataAdd({ type: UserDataType.DISPLAY, value: fname }, dataOptions, signer));
-  // await submitMessage(
-  //   makeUserDataAdd({ type: UserDataType.PFP, value: "https://i.imgur.com/yed5Zfk.gif" }, dataOptions, signer),
-  // );
 
   console.log(`Successfully set up user, view at: https://warpcast.com/${fname}`);
   hubClient.close();
