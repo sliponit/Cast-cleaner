@@ -238,7 +238,7 @@ const submitMessage = async (resultPromise: HubAsyncResult<Message>) => {
 
   await hubClient.getCastsByFid({
     fid,
-    pageSize: 10,
+    pageSize: 1,
   }).then(async (castsResult) => {
     await castsResult.map((cast) => cast.messages.map((message) => {
       const timeDiff = (Date.now() / 1000 - 1609459200 - message.data.timestamp) / 3600 / 24; // fc timestamps start at 1609459200
