@@ -1,8 +1,8 @@
 # Cast-cleaner
 
-This project is a script to remove old casts. It uses the Typescript interface for Farcaster Hubs to list all casts and delete those which are older than 7 days. The project is unfinished, the user needs to enter the mnemonic pass phrase for its farcaster account in an environment file and run the script. A UI with a auth screen to log in to farcaster and get a signer key is missing, I did not have time to implement this UI.
+This project is a script to remove old casts. It uses the Typescript interface for Farcaster Hubs to list all casts and delete those which are older than 7 days. It would to run say every day through a cron job for example. The project is unfinished, the user needs to enter the mnemonic pass phrase for its farcaster account in an environment file and run the script. A UI with a auth screen to log in to farcaster and get a signer key is missing,  I did not have time to implement this UI nor the scheduling to regularly run the script.
 
-The project is a fork from the repo https://github.com/farcasterxyz/hub-monorepo/tree/main/packages/hub-nodejs/examples/write-data. Environment variables are grouped in an env file but again a UI would need to handle those especially through an auth screen to farcaster.
+It uses the Typescript interface for Farcaster Hubs @farcaster/hub-nodejs to list all casts and delete those which are more are older than 7 days. The project is a fork from the repo https://github.com/farcasterxyz/hub-monorepo/tree/main/packages/hub-nodejs/examples/write-data. Environment variables are grouped in an env file but again a UI would need to handle those especially through an auth screen to farcaster.
 
 Code is in `./node.js` (Repo fork from `https://github.com/farcasterxyz/hub-monorepo/tree/main/packages/hub-nodejs/examples/write-data`)
 
